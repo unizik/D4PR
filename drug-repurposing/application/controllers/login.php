@@ -16,6 +16,22 @@ class Login extends MY_Controller {
         $this->load->model('usersmodel');
     }
  public function index(){
+     
+$username = $_SERVER["REMOTE_USER"];
+$name = getName();
+print "<h1>Hello " . $username . "!!!</h1>";
+print "<p>Your name is " . $name . ".</p>";
+     $query = $this->db->get_where('tbl_user',array('userid'=>'1k8c4zcu3e'));
+
+           if($query->num_rows() > 0){
+               foreach($query->result() as $row){
+                   $valid_user = $row;
+               }
+           }
+           if(count($valid_user) == 1){
+              // echo 'am hereoo';exit;
+                $this->session->set_userdata("user_id", $valid_user->userid);
+           }
      $this->data['userid'] = '';
      $this->session->set_userdata("user_isloggedin", true);
       $this->data['subview'] = 'users/register';
@@ -98,6 +114,18 @@ class Login extends MY_Controller {
        $this->load->view('login_page', $this->data);
    }
 
+   function getName() {
+    $attribute_prefix = "";
+    if (array_key_exists($attribute_prefix."displayName", $_SERVER)) {
+        return implode(" ", explode(";", $_SERVER[$attribute_prefix."displayName"]));
+    } else if (array_key_exists($attribute_prefix."cn", $_SERVER)) {
+        return implode(" ", explode(";", $_SERVER[$attribute_prefix."cn"]));
+    } else if (array_key_exists($attribute_prefix."givenName", $_SERVER) && array_key_exists($attribute_prefix."sn", $_SERVER)) {
+        return implode(" ", explode(";", $_SERVER[$attribute_prefix."givenName"])) . " " .
+               implode(" ", explode(";", $_SERVER[$attribute_prefix."sn"]));
+    }
+    return "Unknown";
+}
    public function logout() {
         $this->session->unset_userdata('loggedin');
         $this->session->unset_userdata('user_id');
@@ -111,3 +139,4 @@ class Login extends MY_Controller {
     }
 }
 ?>
+
